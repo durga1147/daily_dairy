@@ -218,3 +218,29 @@ document.getElementById('update-btn').addEventListener('click', async () => {
         showToast('Failed to update entry.', 'error');
     }
 });
+
+// ---- Theme Toggle Logic ----
+
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
+const themeIcon = themeToggleBtn.querySelector('i');
+
+// 1. Check browser storage to remember user preference on load
+if (localStorage.getItem('diary-theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+    themeIcon.classList.replace('fa-moon', 'fa-sun');
+}
+
+// 2. Listen for clicks on the toggle button
+themeToggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    
+    if (document.body.classList.contains('dark-mode')) {
+        // Switch to Dark
+        localStorage.setItem('diary-theme', 'dark');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+    } else {
+        // Switch to Light
+        localStorage.setItem('diary-theme', 'light');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
+    }
+});

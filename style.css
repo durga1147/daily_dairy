@@ -122,6 +122,9 @@ button { font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s
 /* ---------------------------------------------------
    NOTEBOOK LINES FOR EDITOR & VIEW (Uiverse Integration) 
    --------------------------------------------------- */
+/* ---------------------------------------------------
+   NOTEBOOK LINES FOR EDITOR & VIEW (Bulletproof Version) 
+   --------------------------------------------------- */
 textarea, .read-only-content {
     flex-grow: 1; 
     width: 100%; 
@@ -132,28 +135,31 @@ textarea, .read-only-content {
     overflow-y: auto; 
     color: #111827; 
     
-    /* Notebook Background Pattern */
-    background: linear-gradient(#3f87a6 10%, #ebf8e1a2 10%),
-                linear-gradient(to right, #ebf8e100 10%, #c73030 10% 10.2%, #ebf8e100 10.5%);
-    background-size: 100% 26px, 100% 100%; 
-    background-repeat: repeat, no-repeat;
+    /* Solid base paper color */
+    background-color: #FAFAFA;
     
-    /* Scrolls lines with text */
+    /* Layer 1: The vertical red margin line (at 50px)
+      Layer 2: The repeating horizontal blue lines (every 26px)
+    */
+    background-image: 
+        linear-gradient(to right, transparent 50px, #fca5a5 50px, #fca5a5 52px, transparent 52px),
+        repeating-linear-gradient(transparent, transparent 25px, #93c5fd 25px, #93c5fd 26px);
+    
+    /* CRITICAL: Locks the lines to scroll with the text */
     background-attachment: local; 
     
     /* Perfect Text Alignment */
     line-height: 26px; 
     font-size: 15px;
     
-    padding-top: 4px; 
-    padding-left: calc(10% + 12px); 
+    padding-top: 5px; /* Pushes letters exactly onto the blue lines */
+    padding-left: 65px; /* Pushes text safely past the red margin line */
     padding-right: 15px;
     border-radius: var(--radius-md); 
 }
 
 textarea::placeholder { 
-    color: #6b8c82; 
-    opacity: 0.8;
+    color: #9CA3AF; 
 }
 
 /* List Styles */

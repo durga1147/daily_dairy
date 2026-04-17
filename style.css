@@ -300,3 +300,31 @@ body.dark-mode #unlock-pin-input:focus {
 /* Dark Mode Updates for the new inputs */
 body.dark-mode .custom-select { background-color: #111827; color: var(--text-main); }
 body.dark-mode .recovery-box { background-color: #111827; border-color: var(--border-color); }
+
+/* ---------------------------------------------------
+   FORGOT PIN CHOICE CARDS
+   --------------------------------------------------- */
+.choice-card {
+    background: #FAFAFA;
+    padding: 20px;
+    border-radius: var(--radius-pg);
+    display: flex;
+    flex-direction: row; /* Horizontal layout */
+    align-items: center;
+    gap: 15px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 15px;
+}
+
+.choice-card:last-child { margin-bottom: 0; }
+.choice-card:active { transform: scale(0.98); background-color: var(--secondary); }
+.choice-card .icon-wrapper { margin-bottom: 0; } /* Reset default margin */
+.choice-card h3 { font-size: 1.1rem; }
+.choice-card p { font-size: 0.85rem; color: var(--text-muted); }
+
+/* Dark Mode support for choice cards */
+body.dark-mode .choice-card {
+    background-color: #111827;
+}

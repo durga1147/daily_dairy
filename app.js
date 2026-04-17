@@ -4,12 +4,12 @@ import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy 
 
 // TODO: Replace with your Firebase Project Configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBzB2dzT4k1yK6nwi55JlaG4Pk20FQprTE",
+  authDomain: "personal-diary-app-f9861.firebaseapp.com",
+  projectId: "personal-diary-app-f9861",
+  storageBucket: "personal-diary-app-f9861.firebasestorage.app",
+  messagingSenderId: "12621920736",
+  appId: "1:12621920736:web:e1d5eba84bf3b4bbab9385"
 };
 
 // Initialize Firebase

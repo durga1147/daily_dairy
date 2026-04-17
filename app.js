@@ -37,16 +37,16 @@ window.showToast = (message, type = 'success') => {
     const toast = document.createElement('div');
     toast.className = `toast ${type === 'error' ? 'error-toast' : ''}`;
     
-    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    // Aesthetic change: Font Awesome icon selection
+    const icon = type === 'success' ? 'fa-fountain-pen-nib' : 'fa-exclamation-circle';
     toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
     
     container.appendChild(toast);
 
-    // Auto remove after 3 seconds
     setTimeout(() => {
         toast.classList.add('fade-out');
         toast.addEventListener('animationend', () => toast.remove());
-    }, 3000);
+    }, 3500); // Slightly longer toast display
 };
 
 // ---- UI Navigation Logic ----
@@ -63,12 +63,13 @@ window.showScreen = (screenId) => {
 
 const getTodayDate = () => {
     const today = new Date();
+    // A more formal date string for the diary title
     return today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 };
 
 const getDBDateStr = () => {
     const today = new Date();
-    return today.toISOString().split('T')[0]; // Used as Document ID
+    return today.toISOString().split('T')[0]; 
 };
 
 // ---- Authentication Logic ----
@@ -76,24 +77,30 @@ const getDBDateStr = () => {
 document.getElementById('login-btn').addEventListener('click', () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    if(!email || !password) return showToast('Please enter both email and password.', 'error');
+    if(!email || !password) return showToast('Please enter both identity and passphrase.', 'error');
     
     signInWithEmailAndPassword(auth, email, password)
-        .catch(error => document.getElementById('auth-error').innerText = error.message);
+        .catch(error => {
+            console.error(error);
+            document.getElementById('auth-error').innerText = "Access denied. Verification failed.";
+        });
 });
 
 document.getElementById('signup-btn').addEventListener('click', () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    if(!email || !password) return showToast('Please enter both email and password.', 'error');
+    if(!email || !password) return showToast('Please enter both identity and passphrase.', 'error');
 
     createUserWithEmailAndPassword(auth, email, password)
-        .catch(error => document.getElementById('auth-error').innerText = error.message);
+        .catch(error => {
+            console.error(error);
+            document.getElementById('auth-error').innerText = "Registration blocked. Account already exists or details invalid.";
+        });
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
     signOut(auth);
-    showToast('Signed out successfully.', 'success');
+    showToast('The journal is now sealed.', 'success');
 });
 
 onAuthStateChanged(auth, (user) => {
@@ -111,9 +118,8 @@ onAuthStateChanged(auth, (user) => {
 document.getElementById('save-btn').addEventListener('click', async () => {
     const content = document.getElementById('diary-content').value;
     
-    // Replaced default alert with Custom Modal
     if (!content.trim()) {
-        return showModal('Hold on!', 'Your diary entry is empty. Please write something before saving.');
+        return showModal('Hold, Scribe!', 'Your diary record is incomplete. You cannot seal an empty record.');
     }
 
     const dateStr = getDBDateStr();
@@ -123,12 +129,11 @@ document.getElementById('save-btn').addEventListener('click', async () => {
             timestamp: new Date()
         });
         
-        // Replaced default alert with Toast
-        showToast('Entry Saved Successfully!', 'success');
+        showToast('Record officially sealed.', 'success');
         showScreen('dashboard-section');
     } catch (error) {
         console.error("Error saving: ", error);
-        showToast('Failed to save entry.', 'error');
+        showToast('Failed to save record.', 'error');
     }
 });
 
@@ -136,25 +141,27 @@ document.getElementById('save-btn').addEventListener('click', async () => {
 
 window.loadEntries = async (mode) => {
     currentMode = mode;
-    document.getElementById('list-title').innerText = mode === 'view' ? 'Past Diaries' : 'Edit Records';
+    // Theming titles
+    document.getElementById('list-title').innerText = mode === 'view' ? 'Record Archives' : 'Revise Archives';
     showScreen('list-section');
     
     const listEl = document.getElementById('entries-list');
-    listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #6B7280;">Loading entries...</div>';
+    listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #857262; font-family:Walter Turncoat;">Consulting archives...</div>';
 
     const q = query(collection(db, "users", currentUser.uid, "diaries"), orderBy("timestamp", "desc"));
     const snapshot = await getDocs(q);
     
     listEl.innerHTML = '';
     if(snapshot.empty) {
-        listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #6B7280;">No entries found. Start writing!</div>';
+        listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #857262; font-family:Walter Turncoat;">The archive is currently empty. Start composing history!</div>';
         return;
     }
 
     snapshot.forEach(docSnap => {
         const li = document.createElement('li');
-        li.innerHTML = `<span class="list-date"><i class="far fa-calendar"></i> ${docSnap.id}</span> 
-                        <i class="fas fa-chevron-right" style="color: #D1D5DB;"></i>`;
+        li.className = 'stamp-effect'; // Apply stamp rotation on click
+        li.innerHTML = `<span class="list-date"><i class="fas fa-bookmark"></i> ${docSnap.id}</span> 
+                        <i class="fas fa-arrow-right" style="color: rgba(124, 79, 52, 0.4);"></i>`;
         li.onclick = () => openEntry(docSnap.id, docSnap.data().content);
         listEl.appendChild(li);
     });
@@ -169,7 +176,7 @@ const openEntry = (dateId, content) => {
         showScreen('view-detail-section');
     } else {
         currentEditId = dateId;
-        document.getElementById('edit-date-title').innerText = `Editing: ${dateId}`;
+        document.getElementById('edit-date-title').innerText = dateId; // Keeping title cleaner
         document.getElementById('edit-content').value = content;
         showScreen('edit-detail-section');
     }
@@ -181,7 +188,7 @@ document.getElementById('update-btn').addEventListener('click', async () => {
     const updatedContent = document.getElementById('edit-content').value;
     
     if (!updatedContent.trim()) {
-        return showModal('Wait!', 'You cannot save an empty entry. Write something or go back.');
+        return showModal('Hold, Scribe!', 'Your record is now blank. You must write history, or go back.');
     }
 
     try {
@@ -190,11 +197,10 @@ document.getElementById('update-btn').addEventListener('click', async () => {
             timestamp: new Date()
         }, { merge: true });
         
-        // Replaced default alert with Toast
-        showToast('Entry Updated Successfully!', 'success');
+        showToast('Record refined and resealed.', 'success');
         showScreen('dashboard-section');
     } catch (error) {
         console.error("Error updating: ", error);
-        showToast('Failed to update entry.', 'error');
+        showToast('Failed to refine record.', 'error');
     }
 });

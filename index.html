@@ -48,15 +48,20 @@
                     <h3>Write</h3>
                     <p>New entry</p>
                 </div>
-                <div class="menu-card" onclick="loadEntries('view')">
+                <div class="menu-card" onclick="attemptAccess('view')">
                     <div class="icon-wrapper view-icon"><i class="fas fa-book-open"></i></div>
                     <h3>View</h3>
                     <p>Read past</p>
                 </div>
-                <div class="menu-card" onclick="loadEntries('edit')">
+                <div class="menu-card" onclick="attemptAccess('edit')">
                     <div class="icon-wrapper edit-icon"><i class="fas fa-edit"></i></div>
                     <h3>Edit</h3>
                     <p>Update entries</p>
+                </div>
+                <div class="menu-card" onclick="showScreen('settings-section')">
+                    <div class="icon-wrapper settings-icon"><i class="fas fa-cog"></i></div>
+                    <h3>Settings</h3>
+                    <p>App security</p>
                 </div>
             </div>
         </section>
@@ -65,7 +70,8 @@
             <header class="app-header">
                 <button class="icon-btn back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
                 <h2>New Entry</h2>
-                <div style="width: 40px;"></div> </header>
+                <div style="width: 40px;"></div>
+            </header>
             <div class="editor-container">
                 <p id="current-date" class="date-badge"></p>
                 <textarea id="diary-content" placeholder="Dear diary, today I..."></textarea>
@@ -110,6 +116,58 @@
                 <button id="update-btn" class="btn-primary"><i class="fas fa-save"></i> Update Entry</button>
             </div>
         </section>
+
+        <section id="settings-section" class="screen hidden">
+            <header class="app-header">
+                <button class="icon-btn back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
+                <h2>Security Settings</h2>
+                <div style="width: 40px;"></div>
+            </header>
+            
+            <div class="editor-container" style="overflow-y: auto; padding: 25px 20px;">
+                <h3 style="margin-bottom: 5px;">Set Access PIN</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px;">This PIN will be required to view or edit your past diary entries.</p>
+
+                <div class="input-group">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="set-pin" placeholder="Enter 4-Digit PIN" maxlength="4" pattern="\d*">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="confirm-pin" placeholder="Confirm 4-Digit PIN" maxlength="4" pattern="\d*">
+                </div>
+
+                <hr style="border: 0; height: 1px; background: var(--border-color); margin: 25px 0;">
+
+                <h3 style="margin-bottom: 20px;">Account Recovery</h3>
+                <div class="input-group">
+                    <i class="fas fa-question-circle"></i>
+                    <select id="security-question" class="custom-select">
+                        <option value="" disabled selected>Select Security Question</option>
+                        <option value="pet">What was your first pet's name?</option>
+                        <option value="school">What was the name of your elementary school?</option>
+                        <option value="city">In what city were you born?</option>
+                        <option value="friend">What is your childhood best friend's name?</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-comment-dots"></i>
+                    <input type="text" id="security-answer" placeholder="Answer">
+                </div>
+
+                <div class="recovery-box">
+                    <h4 style="margin-bottom: 8px;">Master Recovery Key</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">Generate and save this key somewhere safe. It is your ultimate backup if you forget your PIN and answer.</p>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="recovery-key" readonly placeholder="Click Generate" style="margin-bottom: 0; font-family: monospace; letter-spacing: 2px;">
+                        <button id="generate-key-btn" class="btn-secondary" style="margin-top: 0; width: auto; padding: 10px 15px;"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="action-footer">
+                <button id="save-settings-btn" class="btn-primary"><i class="fas fa-shield-alt"></i> Save Security Details</button>
+            </div>
+        </section>
     </div>
 
     <div id="toast-container"></div>
@@ -120,6 +178,21 @@
             <h3 id="modal-title">Notice</h3>
             <p id="modal-message"></p>
             <button class="btn-primary" onclick="closeModal()">Got it</button>
+        </div>
+    </div>
+
+    <div id="pin-prompt-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-icon" style="color: var(--primary);"><i class="fas fa-lock"></i></div>
+            <h3 style="margin-bottom: 10px;">Protected Area</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Please enter your 4-digit PIN to access the archives.</p>
+            
+            <input type="password" id="unlock-pin-input" placeholder="• • • •" maxlength="4" style="text-align: center; font-size: 1.5rem; letter-spacing: 12px; margin-bottom: 20px;">
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-secondary" onclick="closePinPrompt()" style="margin-top: 0;">Cancel</button>
+                <button class="btn-primary" id="verify-pin-btn">Unlock</button>
+            </div>
         </div>
     </div>
 

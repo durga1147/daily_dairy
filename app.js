@@ -12,6 +12,7 @@ const firebaseConfig = {
   appId: "1:12621920736:web:e1d5eba84bf3b4bbab9385"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -68,7 +69,7 @@ const getTodayDate = () => {
 
 const getDBDateStr = () => {
     const today = new Date();
-    return today.toISOString().split('T')[0]; // Used as Document ID
+    return today.toISOString().split('T')[0]; // Used as Document ID (YYYY-MM-DD)
 };
 
 // ---- Authentication Logic ----
@@ -106,35 +107,42 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+// ---- Database Logic: Check Before Write ----
+
+window.checkTodayEntry = async () => {
+    const dateStr = getDBDateStr();
+    const docRef = doc(db, "users", currentUser.uid, "diaries", dateStr);
+    
+    try {
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            // Block access and show toaster
+            showToast('Entry for today already exists. Try editing the existing one.', 'error');
+        } else {
+            // Allow access to the write screen
+            showScreen('write-section');
+        }
+    } catch (error) {
+        console.error("Error checking entry: ", error);
+        showToast('Failed to check database.', 'error');
+    }
+};
+
 // ---- Database Logic: Write ----
 
 document.getElementById('save-btn').addEventListener('click', async () => {
-    const newContent = document.getElementById('diary-content').value;
+    const content = document.getElementById('diary-content').value;
     
-    // Check if empty
-    if (!newContent.trim()) {
+    if (!content.trim()) {
         return showModal('Hold on!', 'Your diary entry is empty. Please write something before saving.');
     }
 
     const dateStr = getDBDateStr();
-    const docRef = doc(db, "users", currentUser.uid, "diaries", dateStr);
-
     try {
-        // 1. Check if a diary entry already exists for today
-        const docSnap = await getDoc(docRef);
-        
-        let finalContent = newContent;
-
-        // 2. If it exists, append the new text with a one-line gap
-        if (docSnap.exists()) {
-            const existingContent = docSnap.data().content;
-            finalContent = existingContent + "\n\n" + newContent;
-        }
-
-        // 3. Save the combined (or new) content to the database
-        await setDoc(docRef, {
-            content: finalContent,
-            timestamp: new Date() // Updates timestamp to the latest addition
+        await setDoc(doc(db, "users", currentUser.uid, "diaries", dateStr), {
+            content: content,
+            timestamp: new Date()
         });
         
         showToast('Entry Saved Successfully!', 'success');
@@ -203,7 +211,6 @@ document.getElementById('update-btn').addEventListener('click', async () => {
             timestamp: new Date()
         }, { merge: true });
         
-        // Replaced default alert with Toast
         showToast('Entry Updated Successfully!', 'success');
         showScreen('dashboard-section');
     } catch (error) {

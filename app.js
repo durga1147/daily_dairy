@@ -179,6 +179,24 @@ document.getElementById('generate-key-btn').addEventListener('click', () => {
     document.getElementById('recovery-key').value = key;
 });
 
+// ---- Add this right below your existing generate-key-btn logic ----
+
+document.getElementById('copy-key-btn').addEventListener('click', () => {
+    const keyInput = document.getElementById('recovery-key');
+    
+    if (!keyInput.value) {
+        return showToast('Please generate a key first!', 'error');
+    }
+    
+    // Copy text to clipboard
+    navigator.clipboard.writeText(keyInput.value).then(() => {
+        showToast('Recovery key copied to clipboard!', 'success');
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+        showToast('Failed to copy key.', 'error');
+    });
+});
+
 document.getElementById('save-settings-btn').addEventListener('click', async () => {
     const pin = document.getElementById('set-pin').value;
     const confirmPin = document.getElementById('confirm-pin').value;

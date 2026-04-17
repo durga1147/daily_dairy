@@ -213,3 +213,35 @@ textarea::placeholder {
 
 @keyframes slideDown { 0% { opacity: 0; transform: translateY(-20px); } 100% { opacity: 1; transform: translateY(0); } }
 @keyframes fadeOut { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-20px); } }
+
+/* ---------------------------------------------------
+   DARK MODE OVERRIDES
+   --------------------------------------------------- */
+body.dark-mode {
+    --bg-color: #111827; /* Deep dark blue/gray */
+    --card-bg: #1F2937;
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --border-color: #374151;
+    --secondary: #374151;
+    --secondary-text: #E5E7EB;
+}
+
+/* Inputs & Lists in Dark Mode */
+body.dark-mode .input-group input,
+body.dark-mode #entries-list li {
+    background-color: #111827;
+    color: var(--text-main);
+}
+body.dark-mode .input-group input:focus {
+    background-color: #1F2937;
+}
+
+/* Notebook Lines in Dark Mode */
+body.dark-mode textarea, 
+body.dark-mode .read-only-content {
+    background-color: #1F2937; /* Matches the dark card background */
+    color: #F9FAFB;
+    /* Subtle dark gray lines instead of bright blue */
+    background-image: repeating-linear-gradient(transparent, transparent 25px, #374151 25px, #374151 26px);
+}

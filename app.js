@@ -4,21 +4,33 @@ import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy 
 
 // TODO: Replace with your Firebase Project Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBzB2dzT4k1yK6nwi55JlaG4Pk20FQprTE",
-  authDomain: "personal-diary-app-f9861.firebaseapp.com",
-  projectId: "personal-diary-app-f9861",
-  storageBucket: "personal-diary-app-f9861.firebasestorage.app",
-  messagingSenderId: "12621920736",
-  appId: "1:12621920736:web:e1d5eba84bf3b4bbab9385"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Global State Variables
 let currentUser = null;
 let currentMode = ''; 
 let currentEditId = ''; 
+let userSecurityData = null;
+let pendingAccessMode = '';
+let currentCorrectPin = '';
+
+const questionsMap = {
+    'pet': "What was your first pet's name?",
+    'school': "What was the name of your elementary school?",
+    'city': "In what city were you born?",
+    'friend': "What is your childhood best friend's name?"
+};
 
 // ---- UI Custom Popups & Toasts ----
 
@@ -104,6 +116,165 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+// ---- Settings Logic: Menu & Navigation ----
+
+window.openSettingsMenu = async () => {
+    try {
+        const securityDoc = await getDoc(doc(db, "users", currentUser.uid, "settings", "security"));
+        if (securityDoc.exists()) {
+            userSecurityData = securityDoc.data();
+        } else {
+            userSecurityData = null;
+        }
+        showScreen('settings-menu-section');
+    } catch (error) {
+        console.error("Error loading settings: ", error);
+        showToast('Failed to load settings.', 'error');
+    }
+};
+
+window.handleSetPinClick = () => {
+    if (userSecurityData && userSecurityData.pin) {
+        showToast('Security PIN is already set. Use Change PIN instead.', 'error');
+    } else {
+        showScreen('set-pin-section');
+    }
+};
+
+window.handleChangePinClick = () => {
+    if (!userSecurityData || !userSecurityData.pin) {
+        showToast('No PIN set yet. Please Set PIN first.', 'error');
+    } else {
+        document.getElementById('old-pin').value = '';
+        document.getElementById('new-pin').value = '';
+        document.getElementById('confirm-new-pin').value = '';
+        showScreen('change-pin-section');
+    }
+};
+
+window.handleForgotPinClick = () => {
+    if (!userSecurityData || !userSecurityData.pin) {
+        showToast('No PIN set yet. Please Set PIN first.', 'error');
+    } else {
+        document.getElementById('recover-question-display').innerText = questionsMap[userSecurityData.securityQuestion];
+        document.getElementById('recover-answer').value = '';
+        document.getElementById('recover-key-input').value = '';
+        document.getElementById('forgot-new-pin').value = '';
+        document.getElementById('forgot-confirm-pin').value = '';
+        showScreen('forgot-pin-section');
+    }
+};
+
+// ---- Settings Logic: 1. Set New PIN ----
+
+document.getElementById('generate-key-btn').addEventListener('click', () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let key = '';
+    for (let i = 0; i < 8; i++) {
+        key += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById('recovery-key').value = key;
+});
+
+document.getElementById('copy-key-btn').addEventListener('click', () => {
+    const keyInput = document.getElementById('recovery-key');
+    if (!keyInput.value) return showToast('Please generate a key first!', 'error');
+    navigator.clipboard.writeText(keyInput.value).then(() => {
+        showToast('Recovery key copied to clipboard!', 'success');
+    }).catch(err => showToast('Failed to copy key.', 'error'));
+});
+
+document.getElementById('save-settings-btn').addEventListener('click', async () => {
+    const pin = document.getElementById('set-pin').value;
+    const confirmPin = document.getElementById('confirm-pin').value;
+    const question = document.getElementById('security-question').value;
+    const answer = document.getElementById('security-answer').value;
+    const recoveryKey = document.getElementById('recovery-key').value;
+
+    if (!pin || !confirmPin || !question || !answer || !recoveryKey) return showToast('Please fill all fields.', 'error');
+    if (pin !== confirmPin) return showToast('PINs do not match.', 'error');
+    if (pin.length < 4) return showToast('PIN must be exactly 4 digits.', 'error');
+
+    try {
+        const newData = {
+            pin: pin,
+            securityQuestion: question,
+            securityAnswer: answer.toLowerCase().trim(),
+            recoveryKey: recoveryKey,
+            updatedAt: new Date()
+        };
+        await setDoc(doc(db, "users", currentUser.uid, "settings", "security"), newData);
+        userSecurityData = newData; 
+        
+        showToast('Security setup complete!', 'success');
+        showScreen('settings-menu-section');
+    } catch (error) {
+        console.error("Error saving settings: ", error);
+        showToast('Failed to save security settings.', 'error');
+    }
+});
+
+// ---- Settings Logic: 2. Change PIN ----
+
+document.getElementById('update-pin-btn').addEventListener('click', async () => {
+    const oldPin = document.getElementById('old-pin').value;
+    const newPin = document.getElementById('new-pin').value;
+    const confirmNewPin = document.getElementById('confirm-new-pin').value;
+
+    if (!oldPin || !newPin || !confirmNewPin) return showToast('Please fill all fields.', 'error');
+    if (oldPin !== userSecurityData.pin) return showToast('Incorrect current PIN.', 'error');
+    if (newPin !== confirmNewPin) return showToast('New PINs do not match.', 'error');
+    if (newPin.length < 4) return showToast('New PIN must be 4 digits.', 'error');
+
+    try {
+        await setDoc(doc(db, "users", currentUser.uid, "settings", "security"), { pin: newPin }, { merge: true });
+        userSecurityData.pin = newPin; 
+        showToast('PIN successfully updated!', 'success');
+        showScreen('settings-menu-section');
+    } catch (error) {
+        showToast('Failed to update PIN.', 'error');
+    }
+});
+
+// ---- Settings Logic: 3. Forgot / Recover PIN ----
+
+document.getElementById('recovery-method-select').addEventListener('change', (e) => {
+    if (e.target.value === 'question') {
+        document.getElementById('recover-question-container').classList.remove('hidden');
+        document.getElementById('recover-key-container').classList.add('hidden');
+    } else {
+        document.getElementById('recover-question-container').classList.add('hidden');
+        document.getElementById('recover-key-container').classList.remove('hidden');
+    }
+});
+
+document.getElementById('recover-pin-btn').addEventListener('click', async () => {
+    const method = document.getElementById('recovery-method-select').value;
+    const newPin = document.getElementById('forgot-new-pin').value;
+    const confirmPin = document.getElementById('forgot-confirm-pin').value;
+
+    if (!newPin || !confirmPin) return showToast('Please enter a new PIN.', 'error');
+    if (newPin !== confirmPin) return showToast('New PINs do not match.', 'error');
+    if (newPin.length < 4) return showToast('New PIN must be 4 digits.', 'error');
+
+    if (method === 'question') {
+        const answer = document.getElementById('recover-answer').value.toLowerCase().trim();
+        if (answer !== userSecurityData.securityAnswer) return showToast('Incorrect security answer.', 'error');
+    } else {
+        const key = document.getElementById('recover-key-input').value.trim();
+        if (key !== userSecurityData.recoveryKey) return showToast('Invalid Recovery Key.', 'error');
+    }
+
+    try {
+        await setDoc(doc(db, "users", currentUser.uid, "settings", "security"), { pin: newPin }, { merge: true });
+        userSecurityData.pin = newPin; 
+        showToast('PIN successfully recovered and reset!', 'success');
+        showScreen('settings-menu-section');
+    } catch (error) {
+        showToast('Failed to reset PIN.', 'error');
+    }
+});
+
 // ---- Database Logic: Check Before Write ----
 
 window.checkTodayEntry = async () => {
@@ -125,22 +296,16 @@ window.checkTodayEntry = async () => {
 
 // ---- Database Logic: PIN Access Control ----
 
-let pendingAccessMode = '';
-let currentCorrectPin = '';
-
 window.attemptAccess = async (mode) => {
     try {
-        // Fetch the user's security settings from Firestore
         const securityDoc = await getDoc(doc(db, "users", currentUser.uid, "settings", "security"));
         
         if (securityDoc.exists() && securityDoc.data().pin) {
-            // A PIN is set. Store the target mode and open the unlock modal.
             pendingAccessMode = mode;
             currentCorrectPin = securityDoc.data().pin;
             document.getElementById('unlock-pin-input').value = '';
             document.getElementById('pin-prompt-modal').classList.remove('hidden');
         } else {
-            // No PIN is set, proceed normally.
             window.loadEntries(mode);
         }
     } catch (error) {
@@ -157,86 +322,13 @@ window.closePinPrompt = () => {
 document.getElementById('verify-pin-btn').addEventListener('click', () => {
     const enteredPin = document.getElementById('unlock-pin-input').value;
     if (enteredPin === currentCorrectPin) {
-        // Success: Close modal and grant access
         closePinPrompt();
         window.loadEntries(pendingAccessMode);
     } else {
-        // Failure: Clear input and warn
         showToast('Incorrect PIN.', 'error');
         document.getElementById('unlock-pin-input').value = '';
     }
 });
-
-// ---- Settings Logic: Set PIN & Security ----
-
-document.getElementById('generate-key-btn').addEventListener('click', () => {
-    // Generate an 8-character random alphanumeric key
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let key = '';
-    for (let i = 0; i < 8; i++) {
-        key += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    document.getElementById('recovery-key').value = key;
-});
-
-// ---- Add this right below your existing generate-key-btn logic ----
-
-document.getElementById('copy-key-btn').addEventListener('click', () => {
-    const keyInput = document.getElementById('recovery-key');
-    
-    if (!keyInput.value) {
-        return showToast('Please generate a key first!', 'error');
-    }
-    
-    // Copy text to clipboard
-    navigator.clipboard.writeText(keyInput.value).then(() => {
-        showToast('Recovery key copied to clipboard!', 'success');
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-        showToast('Failed to copy key.', 'error');
-    });
-});
-
-document.getElementById('save-settings-btn').addEventListener('click', async () => {
-    const pin = document.getElementById('set-pin').value;
-    const confirmPin = document.getElementById('confirm-pin').value;
-    const question = document.getElementById('security-question').value;
-    const answer = document.getElementById('security-answer').value;
-    const recoveryKey = document.getElementById('recovery-key').value;
-
-    if (!pin || !confirmPin || !question || !answer || !recoveryKey) {
-        return showToast('Please fill all fields and generate a key.', 'error');
-    }
-    if (pin !== confirmPin) {
-        return showToast('PINs do not match.', 'error');
-    }
-    if (pin.length < 4) {
-        return showToast('PIN must be exactly 4 digits.', 'error');
-    }
-
-    try {
-        // Save the security preferences in a separate "settings" collection
-        await setDoc(doc(db, "users", currentUser.uid, "settings", "security"), {
-            pin: pin,
-            securityQuestion: question,
-            securityAnswer: answer.toLowerCase().trim(),
-            recoveryKey: recoveryKey,
-            updatedAt: new Date()
-        });
-        
-        showToast('Security PIN set successfully!', 'success');
-        showScreen('dashboard-section');
-        
-        // Clear the form fields
-        document.getElementById('set-pin').value = '';
-        document.getElementById('confirm-pin').value = '';
-        document.getElementById('security-answer').value = '';
-    } catch (error) {
-        console.error("Error saving settings: ", error);
-        showToast('Failed to save security settings.', 'error');
-    }
-});
-
 
 // ---- Database Logic: Write ----
 

@@ -12,7 +12,6 @@ const firebaseConfig = {
   appId: "1:12621920736:web:e1d5eba84bf3b4bbab9385"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -42,8 +41,6 @@ window.showToast = (message, type = 'success') => {
     toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
     
     container.appendChild(toast);
-
-    // Auto remove after 3 seconds
     setTimeout(() => {
         toast.classList.add('fade-out');
         toast.addEventListener('animationend', () => toast.remove());
@@ -69,7 +66,7 @@ const getTodayDate = () => {
 
 const getDBDateStr = () => {
     const today = new Date();
-    return today.toISOString().split('T')[0]; // Used as Document ID (YYYY-MM-DD)
+    return today.toISOString().split('T')[0]; 
 };
 
 // ---- Authentication Logic ----
@@ -115,12 +112,9 @@ window.checkTodayEntry = async () => {
     
     try {
         const docSnap = await getDoc(docRef);
-        
         if (docSnap.exists()) {
-            // Block access and show toaster
             showToast('Entry for today already exists. Try editing the existing one.', 'error');
         } else {
-            // Allow access to the write screen
             showScreen('write-section');
         }
     } catch (error) {
@@ -128,6 +122,103 @@ window.checkTodayEntry = async () => {
         showToast('Failed to check database.', 'error');
     }
 };
+
+// ---- Database Logic: PIN Access Control ----
+
+let pendingAccessMode = '';
+let currentCorrectPin = '';
+
+window.attemptAccess = async (mode) => {
+    try {
+        // Fetch the user's security settings from Firestore
+        const securityDoc = await getDoc(doc(db, "users", currentUser.uid, "settings", "security"));
+        
+        if (securityDoc.exists() && securityDoc.data().pin) {
+            // A PIN is set. Store the target mode and open the unlock modal.
+            pendingAccessMode = mode;
+            currentCorrectPin = securityDoc.data().pin;
+            document.getElementById('unlock-pin-input').value = '';
+            document.getElementById('pin-prompt-modal').classList.remove('hidden');
+        } else {
+            // No PIN is set, proceed normally.
+            window.loadEntries(mode);
+        }
+    } catch (error) {
+        console.error("Error checking security: ", error);
+        showToast('Failed to verify access.', 'error');
+    }
+};
+
+window.closePinPrompt = () => {
+    document.getElementById('pin-prompt-modal').classList.add('hidden');
+    document.getElementById('unlock-pin-input').value = '';
+};
+
+document.getElementById('verify-pin-btn').addEventListener('click', () => {
+    const enteredPin = document.getElementById('unlock-pin-input').value;
+    if (enteredPin === currentCorrectPin) {
+        // Success: Close modal and grant access
+        closePinPrompt();
+        window.loadEntries(pendingAccessMode);
+    } else {
+        // Failure: Clear input and warn
+        showToast('Incorrect PIN.', 'error');
+        document.getElementById('unlock-pin-input').value = '';
+    }
+});
+
+// ---- Settings Logic: Set PIN & Security ----
+
+document.getElementById('generate-key-btn').addEventListener('click', () => {
+    // Generate an 8-character random alphanumeric key
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let key = '';
+    for (let i = 0; i < 8; i++) {
+        key += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    document.getElementById('recovery-key').value = key;
+});
+
+document.getElementById('save-settings-btn').addEventListener('click', async () => {
+    const pin = document.getElementById('set-pin').value;
+    const confirmPin = document.getElementById('confirm-pin').value;
+    const question = document.getElementById('security-question').value;
+    const answer = document.getElementById('security-answer').value;
+    const recoveryKey = document.getElementById('recovery-key').value;
+
+    if (!pin || !confirmPin || !question || !answer || !recoveryKey) {
+        return showToast('Please fill all fields and generate a key.', 'error');
+    }
+    if (pin !== confirmPin) {
+        return showToast('PINs do not match.', 'error');
+    }
+    if (pin.length < 4) {
+        return showToast('PIN must be exactly 4 digits.', 'error');
+    }
+
+    try {
+        // Save the security preferences in a separate "settings" collection
+        await setDoc(doc(db, "users", currentUser.uid, "settings", "security"), {
+            pin: pin,
+            securityQuestion: question,
+            securityAnswer: answer.toLowerCase().trim(),
+            recoveryKey: recoveryKey,
+            updatedAt: new Date()
+        });
+        
+        showToast('Security PIN set successfully!', 'success');
+        showScreen('dashboard-section');
+        
+        // Clear the form fields
+        document.getElementById('set-pin').value = '';
+        document.getElementById('confirm-pin').value = '';
+        document.getElementById('security-answer').value = '';
+    } catch (error) {
+        console.error("Error saving settings: ", error);
+        showToast('Failed to save security settings.', 'error');
+    }
+});
+
 
 // ---- Database Logic: Write ----
 
@@ -224,22 +315,17 @@ document.getElementById('update-btn').addEventListener('click', async () => {
 const themeToggleBtn = document.getElementById('theme-toggle-btn');
 const themeIcon = themeToggleBtn.querySelector('i');
 
-// 1. Check browser storage to remember user preference on load
 if (localStorage.getItem('diary-theme') === 'dark') {
     document.body.classList.add('dark-mode');
     themeIcon.classList.replace('fa-moon', 'fa-sun');
 }
 
-// 2. Listen for clicks on the toggle button
 themeToggleBtn.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
-    
     if (document.body.classList.contains('dark-mode')) {
-        // Switch to Dark
         localStorage.setItem('diary-theme', 'dark');
         themeIcon.classList.replace('fa-moon', 'fa-sun');
     } else {
-        // Switch to Light
         localStorage.setItem('diary-theme', 'light');
         themeIcon.classList.replace('fa-sun', 'fa-moon');
     }

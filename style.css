@@ -245,3 +245,25 @@ body.dark-mode .read-only-content {
     /* Subtle dark gray lines instead of bright blue */
     background-image: repeating-linear-gradient(transparent, transparent 25px, #374151 25px, #374151 26px);
 }
+
+/* ---------------------------------------------------
+   SETTINGS & SECURITY STYLES
+   --------------------------------------------------- */
+.settings-icon { background: #F3E8FF; color: #9333EA; } /* Purple icon for settings */
+
+.custom-select {
+    width: 100%; padding: 14px 14px 14px 44px;
+    border: 1px solid var(--border-color); border-radius: var(--radius-md);
+    font-size: 1rem; background: #FAFAFA; transition: border 0.3s;
+    appearance: none; color: var(--text-main); cursor: pointer;
+}
+
+.recovery-box {
+    margin-top: 20px; padding: 20px; 
+    background: var(--secondary); border-radius: var(--radius-md);
+    border: 1px dashed var(--primary);
+}
+
+/* Dark Mode Updates for the new inputs */
+body.dark-mode .custom-select { background-color: #111827; color: var(--text-main); }
+body.dark-mode .recovery-box { background-color: #111827; border-color: var(--border-color); }

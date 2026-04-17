@@ -107,7 +107,7 @@ button { font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s
 .menu-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 4px; }
 .menu-card p { font-size: 0.875rem; color: var(--text-muted); }
 
-/* Editor & View Areas */
+/* Containers */
 .editor-container, .content-container, .list-container {
     background: var(--card-bg); flex-grow: 1; border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm); padding: 20px; display: flex; flex-direction: column;
@@ -118,13 +118,43 @@ button { font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.2s
     padding: 6px 12px; border-radius: 20px; font-size: 0.875rem; font-weight: 600;
     margin-bottom: 16px; align-self: flex-start;
 }
-textarea {
-    flex-grow: 1; width: 100%; border: none; resize: none;
-    font-size: 1.05rem; line-height: 1.6; color: var(--text-main);
-    background: transparent; outline: none;
+
+/* ---------------------------------------------------
+   NOTEBOOK LINES FOR EDITOR & VIEW (Uiverse Integration) 
+   --------------------------------------------------- */
+textarea, .read-only-content {
+    flex-grow: 1; 
+    width: 100%; 
+    border: none; 
+    resize: none; 
+    outline: none;
+    white-space: pre-wrap; 
+    overflow-y: auto; 
+    color: #111827; 
+    
+    /* Notebook Background Pattern */
+    background: linear-gradient(#3f87a6 10%, #ebf8e1a2 10%),
+                linear-gradient(to right, #ebf8e100 10%, #c73030 10% 10.2%, #ebf8e100 10.5%);
+    background-size: 100% 26px, 100% 100%; 
+    background-repeat: repeat, no-repeat;
+    
+    /* Scrolls lines with text */
+    background-attachment: local; 
+    
+    /* Perfect Text Alignment */
+    line-height: 26px; 
+    font-size: 15px;
+    
+    padding-top: 4px; 
+    padding-left: calc(10% + 12px); 
+    padding-right: 15px;
+    border-radius: var(--radius-md); 
 }
-textarea::placeholder { color: #9CA3AF; }
-.read-only-content { font-size: 1.05rem; line-height: 1.7; white-space: pre-wrap; overflow-y: auto; color: #374151; }
+
+textarea::placeholder { 
+    color: #6b8c82; 
+    opacity: 0.8;
+}
 
 /* List Styles */
 .list-container { padding: 10px; overflow-y: auto; }

@@ -2,121 +2,132 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Personal Diary</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Journal | An Analog Space</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Pinyon+Script&family=Walter+Turncoat&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div id="app-container">
-        <section id="auth-section" class="screen">
-            <div class="auth-card">
-                <div class="auth-header">
-                    <i class="fas fa-book-journal-whills auth-icon"></i>
-                    <h2>Welcome Back</h2>
-                    <p>Sign in to continue your journey.</p>
+    <div id="app-wrapper">
+        <div id="app-container">
+            
+            <section id="auth-section" class="screen page-ruled page-margin book-cover">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <div class="embossed-title">A</div>
+                        <h2 class="script-title">My Chronicle</h2>
+                        <p class="ink-stamp">Identity Required</p>
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-quill quill-icon"></i>
+                        <input type="email" id="email" placeholder="Identifier (Email)">
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-lock ink-icon"></i>
+                        <input type="password" id="password" placeholder="Passphrase">
+                    </div>
+                    <button id="login-btn" class="btn-primary btn-ink stamp-effect">Unlock Journal</button>
+                    <button id="signup-btn" class="btn-secondary stamp-effect">Register New Account</button>
+                    <p id="auth-error" class="error"></p>
                 </div>
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="email" placeholder="Email address">
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="password" placeholder="Password">
-                </div>
-                <button id="login-btn" class="btn-primary">Sign In</button>
-                <button id="signup-btn" class="btn-secondary">Create an Account</button>
-                <p id="auth-error" class="error"></p>
-            </div>
-        </section>
+            </section>
 
-        <section id="dashboard-section" class="screen hidden">
-            <header class="app-header">
-                <div>
-                    <h2>My Diary</h2>
-                    <p class="subtitle">Capture your thoughts</p>
+            <section id="dashboard-section" class="screen hidden page-ruled page-margin open-book">
+                <header class="app-header header-stamped">
+                    <div>
+                        <h2 class="script-title">My Journal</h2>
+                        <p class="subtitle WalterTurncoat">Analog Thoughts</p>
+                    </div>
+                    <button id="logout-btn" class="icon-btn stamp-effect" title="Close Journal"><i class="fas fa-door-closed"></i></button>
+                </header>
+                <div class="menu-grid">
+                    <div class="menu-card menu-write stamp-effect" onclick="showScreen('write-section')">
+                        <div class="icon-wrapper"><i class="fas fa-feather"></i></div>
+                        <h3>New Record</h3>
+                        <p class="WalterTurncoat">Compose new thoughts</p>
+                    </div>
+                    <div class="menu-card menu-view stamp-effect" onclick="loadEntries('view')">
+                        <div class="icon-wrapper"><i class="fas fa-eye"></i></div>
+                        <h3>Review Entries</h3>
+                        <p class="WalterTurncoat">Read past history</p>
+                    </div>
+                    <div class="menu-card menu-edit stamp-effect" onclick="loadEntries('edit')">
+                        <div class="icon-wrapper"><i class="fas fa-stamp"></i></div>
+                        <h3>Revise records</h3>
+                        <p class="WalterTurncoat">Update existing texts</p>
+                    </div>
                 </div>
-                <button id="logout-btn" class="icon-btn" title="Sign Out"><i class="fas fa-sign-out-alt"></i></button>
-            </header>
-            <div class="menu-grid">
-                <div class="menu-card" onclick="showScreen('write-section')">
-                    <div class="icon-wrapper write-icon"><i class="fas fa-pen"></i></div>
-                    <h3>Write</h3>
-                    <p>New entry</p>
+            </section>
+
+            <section id="write-section" class="screen hidden page-ruled page-margin open-book">
+                <header class="app-header header-stamped">
+                    <button class="icon-btn back-btn stamp-effect" onclick="showScreen('dashboard-section')"><i class="fas fa-chevron-left"></i></button>
+                    <h2 class="script-title">Compose</h2>
+                    <div style="width: 40px;"></div>
+                </header>
+                
+                <p id="current-date" class="date-badge-analog"></p>
+                <div class="editor-container lined-page">
+                    <textarea id="diary-content" class="ink-writing GochiHand" placeholder="Dear journal, today I..."></textarea>
                 </div>
-                <div class="menu-card" onclick="loadEntries('view')">
-                    <div class="icon-wrapper view-icon"><i class="fas fa-book-open"></i></div>
-                    <h3>View</h3>
-                    <p>Read past</p>
+                
+                <div class="action-footer">
+                    <button id="save-btn" class="btn-primary btn-ink stamp-effect"><i class="fas fa-check"></i> Seal Record</button>
                 </div>
-                <div class="menu-card" onclick="loadEntries('edit')">
-                    <div class="icon-wrapper edit-icon"><i class="fas fa-edit"></i></div>
-                    <h3>Edit</h3>
-                    <p>Update entries</p>
+            </section>
+
+            <section id="list-section" class="screen hidden page-ruled page-margin open-book">
+                <header class="app-header header-stamped">
+                    <button class="icon-btn back-btn stamp-effect" onclick="showScreen('dashboard-section')"><i class="fas fa-chevron-left"></i></button>
+                    <h2 id="list-title" class="script-title">Diary Entries</h2>
+                    <div style="width: 40px;"></div>
+                </header>
+                <div class="list-container lined-page">
+                    <ul id="entries-list"></ul>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="write-section" class="screen hidden">
-            <header class="app-header">
-                <button class="icon-btn back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
-                <h2>New Entry</h2>
-                <div style="width: 40px;"></div> </header>
-            <div class="editor-container">
-                <p id="current-date" class="date-badge"></p>
-                <textarea id="diary-content" placeholder="Dear diary, today I..."></textarea>
-            </div>
-            <div class="action-footer">
-                <button id="save-btn" class="btn-primary"><i class="fas fa-check"></i> Save Entry</button>
-            </div>
-        </section>
+            <section id="view-detail-section" class="screen hidden page-ruled page-margin open-book">
+                <header class="app-header header-stamped">
+                    <button class="icon-btn back-btn stamp-effect" onclick="showScreen('list-section')"><i class="fas fa-chevron-left"></i></button>
+                    <h2 id="view-date-title" class="date-title ink-writing GochiHand"></h2>
+                    <div style="width: 40px;"></div>
+                </header>
+                
+                <div class="content-container lined-page">
+                    <div id="view-content" class="read-only-content ink-writing GochiHand"></div>
+                </div>
+            </section>
 
-        <section id="list-section" class="screen hidden">
-            <header class="app-header">
-                <button class="icon-btn back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
-                <h2 id="list-title">Diary Entries</h2>
-                <div style="width: 40px;"></div>
-            </header>
-            <div class="list-container">
-                <ul id="entries-list"></ul>
-            </div>
-        </section>
-
-        <section id="view-detail-section" class="screen hidden">
-            <header class="app-header">
-                <button class="icon-btn back-btn" onclick="showScreen('list-section')"><i class="fas fa-arrow-left"></i></button>
-                <h2 id="view-date-title" class="date-title"></h2>
-                <div style="width: 40px;"></div>
-            </header>
-            <div class="content-container">
-                <div id="view-content" class="read-only-content"></div>
-            </div>
-        </section>
-
-        <section id="edit-detail-section" class="screen hidden">
-            <header class="app-header">
-                <button class="icon-btn back-btn" onclick="showScreen('list-section')"><i class="fas fa-arrow-left"></i></button>
-                <h2 id="edit-date-title" class="date-title"></h2>
-                <div style="width: 40px;"></div>
-            </header>
-            <div class="editor-container">
-                <textarea id="edit-content"></textarea>
-            </div>
-            <div class="action-footer">
-                <button id="update-btn" class="btn-primary"><i class="fas fa-save"></i> Update Entry</button>
-            </div>
-        </section>
+            <section id="edit-detail-section" class="screen hidden page-ruled page-margin open-book">
+                <header class="app-header header-stamped">
+                    <button class="icon-btn back-btn stamp-effect" onclick="showScreen('list-section')"><i class="fas fa-chevron-left"></i></button>
+                    <h2 id="edit-date-title" class="date-title ink-writing GochiHand"></h2>
+                    <div style="width: 40px;"></div>
+                </header>
+                
+                <div class="editor-container lined-page">
+                    <textarea id="edit-content" class="ink-writing GochiHand"></textarea>
+                </div>
+                
+                <div class="action-footer">
+                    <button id="update-btn" class="btn-primary btn-ink stamp-effect"><i class="fas fa-save"></i> Refine Record</button>
+                </div>
+            </section>
+        </div>
     </div>
 
     <div id="toast-container"></div>
 
     <div id="custom-modal" class="modal-overlay hidden">
-        <div class="modal-card">
-            <div class="modal-icon"><i class="fas fa-exclamation-circle"></i></div>
-            <h3 id="modal-title">Notice</h3>
-            <p id="modal-message"></p>
-            <button class="btn-primary" onclick="closeModal()">Got it</button>
+        <div class="modal-card lined-page">
+            <div class="modal-icon"><i class="fas fa-fountain-pen-nib"></i></div>
+            <h3 id="modal-title" class="WalterTurncoat">Notice</h3>
+            <p id="modal-message" class="GochiHand"></p>
+            <button class="btn-primary btn-ink stamp-effect" onclick="closeModal()">Acknowledge</button>
         </div>
     </div>
 

@@ -3,76 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Personal Diary Ewwwwww</title>
+    <title>My Personal Diary</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div id="app-container">
         <section id="auth-section" class="screen">
-            <h2>Diary Login</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <button id="login-btn">Sign In</button>
-            <button id="signup-btn" class="secondary">Sign Up</button>
-            <p id="auth-error" class="error"></p>
+            <div class="auth-card">
+                <div class="auth-header">
+                    <i class="fas fa-book-journal-whills auth-icon"></i>
+                    <h2>Welcome Back</h2>
+                    <p>Sign in to continue your journey.</p>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="Email address">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Password">
+                </div>
+                <button id="login-btn" class="btn-primary">Sign In</button>
+                <button id="signup-btn" class="btn-secondary">Create an Account</button>
+                <p id="auth-error" class="error"></p>
+            </div>
         </section>
 
         <section id="dashboard-section" class="screen hidden">
-            <header>
-                <h2>My Diary</h2>
-                <button id="logout-btn"><i class="fas fa-sign-out-alt"></i></button>
+            <header class="app-header">
+                <div>
+                    <h2>My Diary</h2>
+                    <p class="subtitle">Capture your thoughts</p>
+                </div>
+                <button id="logout-btn" class="icon-btn" title="Sign Out"><i class="fas fa-sign-out-alt"></i></button>
             </header>
             <div class="menu-grid">
-                <div class="menu-box" onclick="showScreen('write-section')">
-                    <i class="fas fa-pen"></i>
-                    <p>Write</p>
+                <div class="menu-card" onclick="showScreen('write-section')">
+                    <div class="icon-wrapper write-icon"><i class="fas fa-pen"></i></div>
+                    <h3>Write</h3>
+                    <p>New entry</p>
                 </div>
-                <div class="menu-box" onclick="loadEntries('view')">
-                    <i class="fas fa-book-open"></i>
-                    <p>View</p>
+                <div class="menu-card" onclick="loadEntries('view')">
+                    <div class="icon-wrapper view-icon"><i class="fas fa-book-open"></i></div>
+                    <h3>View</h3>
+                    <p>Read past</p>
                 </div>
-                <div class="menu-box" onclick="loadEntries('edit')">
-                    <i class="fas fa-edit"></i>
-                    <p>Edit</p>
+                <div class="menu-card" onclick="loadEntries('edit')">
+                    <div class="icon-wrapper edit-icon"><i class="fas fa-edit"></i></div>
+                    <h3>Edit</h3>
+                    <p>Update entries</p>
                 </div>
             </div>
         </section>
 
         <section id="write-section" class="screen hidden">
-            <header>
-                <button class="back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
-                <h2>Write Diary</h2>
-            </header>
-            <p id="current-date"></p>
-            <textarea id="diary-content" placeholder="Dear diary, today I..."></textarea>
-            <button id="save-btn">Save Entry</button>
+            <header class="app-header">
+                <button class="icon-btn back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
+                <h2>New Entry</h2>
+                <div style="width: 40px;"></div> </header>
+            <div class="editor-container">
+                <p id="current-date" class="date-badge"></p>
+                <textarea id="diary-content" placeholder="Dear diary, today I..."></textarea>
+            </div>
+            <div class="action-footer">
+                <button id="save-btn" class="btn-primary"><i class="fas fa-check"></i> Save Entry</button>
+            </div>
         </section>
 
         <section id="list-section" class="screen hidden">
-            <header>
-                <button class="back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
+            <header class="app-header">
+                <button class="icon-btn back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
                 <h2 id="list-title">Diary Entries</h2>
+                <div style="width: 40px;"></div>
             </header>
-            <ul id="entries-list"></ul>
+            <div class="list-container">
+                <ul id="entries-list"></ul>
+            </div>
         </section>
 
         <section id="view-detail-section" class="screen hidden">
-            <header>
-                <button class="back-btn" onclick="showScreen('list-section')"><i class="fas fa-arrow-left"></i></button>
-                <h2 id="view-date-title"></h2>
+            <header class="app-header">
+                <button class="icon-btn back-btn" onclick="showScreen('list-section')"><i class="fas fa-arrow-left"></i></button>
+                <h2 id="view-date-title" class="date-title"></h2>
+                <div style="width: 40px;"></div>
             </header>
-            <div id="view-content" class="read-only-content"></div>
+            <div class="content-container">
+                <div id="view-content" class="read-only-content"></div>
+            </div>
         </section>
 
         <section id="edit-detail-section" class="screen hidden">
-            <header>
-                <button class="back-btn" onclick="showScreen('list-section')"><i class="fas fa-arrow-left"></i></button>
-                <h2 id="edit-date-title"></h2>
+            <header class="app-header">
+                <button class="icon-btn back-btn" onclick="showScreen('list-section')"><i class="fas fa-arrow-left"></i></button>
+                <h2 id="edit-date-title" class="date-title"></h2>
+                <div style="width: 40px;"></div>
             </header>
-            <textarea id="edit-content"></textarea>
-            <button id="update-btn">Update Entry</button>
+            <div class="editor-container">
+                <textarea id="edit-content"></textarea>
+            </div>
+            <div class="action-footer">
+                <button id="update-btn" class="btn-primary"><i class="fas fa-save"></i> Update Entry</button>
+            </div>
         </section>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div id="custom-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-icon"><i class="fas fa-exclamation-circle"></i></div>
+            <h3 id="modal-title">Notice</h3>
+            <p id="modal-message"></p>
+            <button class="btn-primary" onclick="closeModal()">Got it</button>
+        </div>
     </div>
 
     <script type="module" src="app.js"></script>

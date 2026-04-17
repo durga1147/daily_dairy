@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 // TODO: Replace with your Firebase Project Configuration
 const firebaseConfig = {
@@ -109,21 +109,34 @@ onAuthStateChanged(auth, (user) => {
 // ---- Database Logic: Write ----
 
 document.getElementById('save-btn').addEventListener('click', async () => {
-    const content = document.getElementById('diary-content').value;
+    const newContent = document.getElementById('diary-content').value;
     
-    // Replaced default alert with Custom Modal
-    if (!content.trim()) {
+    // Check if empty
+    if (!newContent.trim()) {
         return showModal('Hold on!', 'Your diary entry is empty. Please write something before saving.');
     }
 
     const dateStr = getDBDateStr();
+    const docRef = doc(db, "users", currentUser.uid, "diaries", dateStr);
+
     try {
-        await setDoc(doc(db, "users", currentUser.uid, "diaries", dateStr), {
-            content: content,
-            timestamp: new Date()
+        // 1. Check if a diary entry already exists for today
+        const docSnap = await getDoc(docRef);
+        
+        let finalContent = newContent;
+
+        // 2. If it exists, append the new text with a one-line gap
+        if (docSnap.exists()) {
+            const existingContent = docSnap.data().content;
+            finalContent = existingContent + "\n\n" + newContent;
+        }
+
+        // 3. Save the combined (or new) content to the database
+        await setDoc(docRef, {
+            content: finalContent,
+            timestamp: new Date() // Updates timestamp to the latest addition
         });
         
-        // Replaced default alert with Toast
         showToast('Entry Saved Successfully!', 'success');
         showScreen('dashboard-section');
     } catch (error) {

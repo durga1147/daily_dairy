@@ -419,3 +419,28 @@ themeToggleBtn.addEventListener('click', () => {
         themeIcon.classList.replace('fa-sun', 'fa-moon');
     }
 });
+
+// ---- Diary Font Logic ----
+
+const loadSavedFont = () => {
+    const savedFont = localStorage.getItem('diary-handwriting') || 'default';
+    document.body.setAttribute('data-diary-font', savedFont);
+    
+    // Highlight the active font card
+    document.querySelectorAll('.font-card').forEach(card => {
+        card.classList.remove('active-font');
+        if(card.getAttribute('data-font') === savedFont) {
+            card.classList.add('active-font');
+        }
+    });
+};
+
+// Expose the function to the HTML buttons
+window.applyFont = (fontName) => {
+    localStorage.setItem('diary-handwriting', fontName);
+    loadSavedFont();
+    showToast('Diary handwriting updated!', 'success');
+};
+
+// Initialize font on app load
+loadSavedFont();

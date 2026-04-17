@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Caveat:wght@500&family=Courier+Prime&family=Dancing+Script:wght@600&family=Gochi+Hand&family=Indie+Flower&family=Patrick+Hand&family=Shadows+Into+Light&family=Special+Elite&family=Walter+Turncoat&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="app-container">
@@ -139,6 +140,11 @@
                     <div class="icon-wrapper settings-icon" style="background: #FEE2E2; color: #DC2626;"><i class="fas fa-unlock-alt"></i></div>
                     <h3>Forgot PIN</h3>
                     <p>Account recovery</p>
+                </div>
+                <div class="menu-card" onclick="showScreen('fonts-section')">
+                    <div class="icon-wrapper settings-icon" style="background: #ECFDF5; color: #10B981;"><i class="fas fa-font"></i></div>
+                    <h3>Diary Font</h3>
+                    <p>Personalize your handwriting</p>
                 </div>
             </div>
         </section>
@@ -279,6 +285,29 @@
 
             <div id="reset-action-footer" class="action-footer hidden">
                 <button id="recover-pin-btn" class="btn-primary"><i class="fas fa-save"></i> Save New PIN</button>
+            </div>
+        </section>
+        <section id="fonts-section" class="screen hidden">
+            <header class="app-header">
+                <button class="icon-btn back-btn" onclick="showScreen('settings-menu-section')"><i class="fas fa-arrow-left"></i></button>
+                <h2>Choose Handwriting</h2>
+                <div style="width: 40px;"></div>
+            </header>
+            <div class="editor-container" style="overflow-y: auto; padding: 15px; background: transparent; box-shadow: none;">
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px;">This will only affect how your diary entries are written and read.</p>
+                
+                <div class="menu-grid" id="font-list-container">
+                    <div class="font-card" data-font="default" onclick="applyFont('default')" style="font-family: 'Inter', sans-serif;">Default Modern</div>
+                    <div class="font-card" data-font="caveat" onclick="applyFont('caveat')" style="font-family: 'Caveat', cursive; font-size: 1.5rem;">Caveat Script</div>
+                    <div class="font-card" data-font="indie" onclick="applyFont('indie')" style="font-family: 'Indie Flower', cursive; font-size: 1.3rem;">Indie Flower</div>
+                    <div class="font-card" data-font="patrick" onclick="applyFont('patrick')" style="font-family: 'Patrick Hand', cursive; font-size: 1.3rem;">Patrick Hand</div>
+                    <div class="font-card" data-font="dancing" onclick="applyFont('dancing')" style="font-family: 'Dancing Script', cursive; font-size: 1.5rem;">Dancing Script</div>
+                    <div class="font-card" data-font="shadows" onclick="applyFont('shadows')" style="font-family: 'Shadows Into Light', cursive; font-size: 1.4rem;">Shadows Into Light</div>
+                    <div class="font-card" data-font="gochi" onclick="applyFont('gochi')" style="font-family: 'Gochi Hand', cursive; font-size: 1.3rem;">Gochi Hand</div>
+                    <div class="font-card" data-font="walter" onclick="applyFont('walter')" style="font-family: 'Walter Turncoat', cursive; font-size: 1.2rem;">Walter Turncoat</div>
+                    <div class="font-card" data-font="courier" onclick="applyFont('courier')" style="font-family: 'Courier Prime', monospace;">Courier Typewriter</div>
+                    <div class="font-card" data-font="elite" onclick="applyFont('elite')" style="font-family: 'Special Elite', cursive;">Special Elite</div>
+                </div>
             </div>
         </section>
 

@@ -138,11 +138,8 @@ textarea, .read-only-content {
     /* Solid base paper color */
     background-color: #FAFAFA;
     
-    /* Layer 1: The vertical red margin line (at 50px)
-      Layer 2: The repeating horizontal blue lines (every 26px)
-    */
+    /* Just the repeating horizontal blue lines (every 26px) */
     background-image: 
-        linear-gradient(to right, transparent 50px, #fca5a5 50px, #fca5a5 52px, transparent 52px),
         repeating-linear-gradient(transparent, transparent 25px, #93c5fd 25px, #93c5fd 26px);
     
     /* CRITICAL: Locks the lines to scroll with the text */
@@ -153,8 +150,11 @@ textarea, .read-only-content {
     font-size: 15px;
     
     padding-top: 5px; /* Pushes letters exactly onto the blue lines */
-    padding-left: 65px; /* Pushes text safely past the red margin line */
+    
+    /* Reduced padding to reclaim space now that the red line is gone */
+    padding-left: 15px; 
     padding-right: 15px;
+    
     border-radius: var(--radius-md); 
 }
 

@@ -328,3 +328,34 @@ body.dark-mode .recovery-box { background-color: #111827; border-color: var(--bo
 body.dark-mode .choice-card {
     background-color: #111827;
 }
+
+/* ---------------------------------------------------
+   DIARY HANDWRITING FONTS
+   --------------------------------------------------- */
+.font-card {
+    padding: 20px;
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-main);
+}
+.font-card:active { transform: scale(0.98); }
+.font-card.active-font { border-color: var(--primary); background: var(--secondary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
+
+/* Apply Font ONLY to Diary Write/View Areas based on Body Attribute */
+body[data-diary-font="caveat"] textarea, body[data-diary-font="caveat"] .read-only-content { font-family: 'Caveat', cursive; font-size: 1.35rem; }
+body[data-diary-font="indie"] textarea, body[data-diary-font="indie"] .read-only-content { font-family: 'Indie Flower', cursive; font-size: 1.2rem; }
+body[data-diary-font="patrick"] textarea, body[data-diary-font="patrick"] .read-only-content { font-family: 'Patrick Hand', cursive; font-size: 1.2rem; }
+body[data-diary-font="dancing"] textarea, body[data-diary-font="dancing"] .read-only-content { font-family: 'Dancing Script', cursive; font-size: 1.4rem; padding-top: 2px; }
+body[data-diary-font="shadows"] textarea, body[data-diary-font="shadows"] .read-only-content { font-family: 'Shadows Into Light', cursive; font-size: 1.3rem; }
+body[data-diary-font="gochi"] textarea, body[data-diary-font="gochi"] .read-only-content { font-family: 'Gochi Hand', cursive; font-size: 1.2rem; }
+body[data-diary-font="walter"] textarea, body[data-diary-font="walter"] .read-only-content { font-family: 'Walter Turncoat', cursive; font-size: 1.1rem; }
+body[data-diary-font="courier"] textarea, body[data-diary-font="courier"] .read-only-content { font-family: 'Courier Prime', monospace; font-size: 1.05rem; }
+body[data-diary-font="elite"] textarea, body[data-diary-font="elite"] .read-only-content { font-family: 'Special Elite', cursive; font-size: 1.05rem; }
+
+/* Dark Mode handling for Font Cards */
+body.dark-mode .font-card.active-font { background: #1F2937; }

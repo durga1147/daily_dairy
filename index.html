@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Diary</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="app-container">
+        <section id="auth-section" class="screen">
+            <h2>Diary Login</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button id="login-btn">Sign In</button>
+            <button id="signup-btn" class="secondary">Sign Up</button>
+            <p id="auth-error" class="error"></p>
+        </section>
+
+        <section id="dashboard-section" class="screen hidden">
+            <header>
+                <h2>My Diary</h2>
+                <button id="logout-btn"><i class="fas fa-sign-out-alt"></i></button>
+            </header>
+            <div class="menu-grid">
+                <div class="menu-box" onclick="showScreen('write-section')">
+                    <i class="fas fa-pen"></i>
+                    <p>Write</p>
+                </div>
+                <div class="menu-box" onclick="loadEntries('view')">
+                    <i class="fas fa-book-open"></i>
+                    <p>View</p>
+                </div>
+                <div class="menu-box" onclick="loadEntries('edit')">
+                    <i class="fas fa-edit"></i>
+                    <p>Edit</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="write-section" class="screen hidden">
+            <header>
+                <button class="back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
+                <h2>Write Diary</h2>
+            </header>
+            <p id="current-date"></p>
+            <textarea id="diary-content" placeholder="Dear diary, today I..."></textarea>
+            <button id="save-btn">Save Entry</button>
+        </section>
+
+        <section id="list-section" class="screen hidden">
+            <header>
+                <button class="back-btn" onclick="showScreen('dashboard-section')"><i class="fas fa-arrow-left"></i></button>
+                <h2 id="list-title">Diary Entries</h2>
+            </header>
+            <ul id="entries-list"></ul>
+        </section>
+
+        <section id="view-detail-section" class="screen hidden">
+            <header>
+                <button class="back-btn" onclick="showScreen('list-section')"><i class="fas fa-arrow-left"></i></button>
+                <h2 id="view-date-title"></h2>
+            </header>
+            <div id="view-content" class="read-only-content"></div>
+        </section>
+
+        <section id="edit-detail-section" class="screen hidden">
+            <header>
+                <button class="back-btn" onclick="showScreen('list-section')"><i class="fas fa-arrow-left"></i></button>
+                <h2 id="edit-date-title"></h2>
+            </header>
+            <textarea id="edit-content"></textarea>
+            <button id="update-btn">Update Entry</button>
+        </section>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>

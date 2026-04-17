@@ -1,0 +1,117 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    color: #333;
+}
+
+#app-container {
+    width: 100%;
+    max-width: 480px; /* Mobile View Optimization */
+    min-height: 100vh;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    position: relative;
+    padding: 20px;
+}
+
+.screen { display: flex; flex-direction: column; height: 100%; }
+.hidden { display: none !important; }
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+h2 { font-size: 1.5rem; color: #2c3e50; }
+
+input, textarea, button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+textarea {
+    flex-grow: 1;
+    min-height: 300px;
+    resize: none;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button.secondary {
+    background-color: transparent;
+    color: #3498db;
+    border: 1px solid #3498db;
+}
+
+.back-btn, #logout-btn {
+    width: auto;
+    background: none;
+    color: #333;
+    padding: 5px 10px;
+    font-size: 1.2rem;
+}
+
+.error { color: #e74c3c; font-size: 0.9rem; text-align: center; }
+
+/* Dashboard Menu Grid */
+.menu-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.menu-box {
+    background-color: #ecf0f1;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.menu-box:active { transform: scale(0.98); }
+.menu-box i { font-size: 2.5rem; color: #3498db; margin-bottom: 10px; }
+.menu-box p { font-size: 1.2rem; font-weight: bold; color: #2c3e50; }
+
+/* List Styles */
+#entries-list { list-style: none; }
+#entries-list li {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+#entries-list li:active { background-color: #f9f9f9; }
+
+/* View Content */
+.read-only-content {
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    flex-grow: 1;
+}
